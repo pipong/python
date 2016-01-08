@@ -9,7 +9,7 @@ from Tkinter import *
 import tkFont
 
 # Time before score button can be pressed again (in milleseconds)
-delaytime = 500
+delayTime = 500
 
 # White team GPIO input pin
 whitegpio = 18
@@ -88,8 +88,8 @@ def white_score(channel):
 
 
 # GPIO event detection
-GPIO.add_event_detect(bluegpio, GPIO.FALLING, callback=blue_score, bouncetime=delaytime)
-GPIO.add_event_detect(whitegpio, GPIO.FALLING, callback=white_score, bouncetime=delaytime)
+GPIO.add_event_detect(bluegpio, GPIO.FALLING, callback=blue_score, bouncetime=delayTime)
+GPIO.add_event_detect(whitegpio, GPIO.FALLING, callback=white_score, bouncetime=delayTime)
 
 # Begins mainloop
 mainloop()
