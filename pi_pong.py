@@ -1,5 +1,5 @@
 # Pi-Pong Scoring
-# Follow the set_up.txt file before running
+# Follow the README.md file before running
 
 print("Running Pi-Pong Scoring...")
 
