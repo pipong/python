@@ -11,11 +11,13 @@ import tkFont
 # Time before score button can be pressed again (in milleseconds)
 delayTime = 500
 
-# White team GPIO input pin
+# White and blue team GPIO pin assignments (Raspberry Pi B+)
 whitegpio = 18
-
-# Blue team GPIO input pin
 bluegpio = 4
+
+# Color Assignments
+whiteColor = "#F2F2F2"
+blueColor = "#0067A0"
 
 # Scores
 blueScore = 0
@@ -42,17 +44,17 @@ window.configure(bg='black')
 def endProgram():
     window.destroy()
 # Setup for the exit button
-exitButton = Button(window, text="Exit", command = endProgram, font=exitFont, borderwidth=0, fg='white', bg='black', highlightthickness=0)
+exitButton = Button(window, text="Exit", command = endProgram, font=exitFont, borderwidth=0, fg=whiteColor, bg='black', highlightthickness=0)
 exitButton.pack()
 exitButton.place(relx=1.0, rely=0.0, anchor=NE)
 
 # Blue Team Score Label
-blueLabel = Label(window, text="0", font=labelFont, fg='blue', bg='black')
+blueLabel = Label(window, text="0", font=labelFont, fg=blueColor, bg='black')
 blueLabel.pack()
 blueLabel.place(relx=0.25, rely=0.50, anchor=CENTER)
 
 # White Team Score Label
-whiteLabel = Label(window, text="0", font=labelFont, fg='white', bg='black')
+whiteLabel = Label(window, text="0", font=labelFont, fg=whiteColor, bg='black')
 whiteLabel.pack()
 whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
 
