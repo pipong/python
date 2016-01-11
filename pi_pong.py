@@ -103,7 +103,6 @@ def white_score(channel):
     whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
     blueLabel.place(relx=0.25, rely=0.50, anchor=CENTER)
 
-
 # GPIO event detection
 GPIO.add_event_detect(bluegpio, GPIO.FALLING, callback=blue_score, bouncetime=delayTime)
 GPIO.add_event_detect(whitegpio, GPIO.FALLING, callback=white_score, bouncetime=delayTime)
