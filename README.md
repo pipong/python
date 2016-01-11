@@ -1,5 +1,4 @@
 # Pi Pong Guide
-========================
 
 ## Raspberry Pi B+ Set Up Instruction
 
