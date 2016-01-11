@@ -3,7 +3,7 @@
 
 ## Raspberry Pi B+ Set Up Instruction
 
-Install raspbian onto the Raspberry Pi B+.  Once installed run the following commands in the terminal.
+Install **Raspbian** onto the Raspberry Pi B+.  Once installed run the following commands in the terminal.
 
 *sudo apt-get update*  
 *sudo apt-get install python-dev python-pip*  
