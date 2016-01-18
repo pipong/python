@@ -1,0 +1,67 @@
+﻿body
+{
+}
+
+#pongtable {
+    width: 800px;
+    height: 400px;
+    background-color: #08330c;
+    border-collapse: collapse;
+}
+
+#pongtable td {
+    border: solid white 2px;
+}
+
+#tableborder {
+    border: solid 1px black;
+    width: 800px;
+    margin: 20px;
+}
+
+#title {
+    text-align: center;
+    width: 800px;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 3em;
+}
+
+#scoretable {
+    width: 800px;
+    margin: 0px 20px;
+    text-align: center;
+    font-size: 5em;
+}
+
+.tablesection {
+    padding: 20px;
+    color: white;
+    font-size: 2em;
+    vertical-align: top;
+    width: 50%;
+    height: 50%;
+}
+
+.tablesection img {
+    width: 30px;
+    height: auto;
+    margin: 0px 20px;
+}
+
+.score_hover {
+    background-color: #808080;
+    cursor: pointer;
+}
+
+#messages {
+    font-size: 3em;
+    color: red;
+    text-align: center;
+    width: 800px;
+}
+
+#settings {
+    padding: 20px;
+    border: solid 1px black;
+    display: none;
+}

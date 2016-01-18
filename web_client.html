@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Ping Pong</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="pongclient.css" />
+</head>
+<body>
+    <div id="menu"><img src="gear.png" height="50" width="50" /></div>
+    <div id="settings">
+        <button id="newgame_button">New Game</button><br /><br />
+        <label for="player_name">Name: </label><input type="text" name="player_name" id="player_name" /> <button id="addplayer_button">Add</button><br /><br />
+        <button id="startgame_button">Start Game</button><br /><br />
+    </div>
+    <div id="title">Pong</div>
+    <div id="tableborder">
+        <table id="pongtable" border="2">
+            <tr><td id="p0" class="tablesection"></td><td id="p1" class="tablesection"></td></tr>
+            <tr><td id="p2" class="tablesection"></td><td id="p3" class="tablesection"></td></tr>
+        </table>
+    </div>
+    <table id="scoretable">
+        <tr><td id="s1"></td><td id="s2"></td></tr>
+    </table>
+    <div id="messages"></div>
+
+    <script type="text/javascript">
+        var pong_server = "http://10.1.1.121:8080";
+        //var pong_server = "http://localhost:8080";
+        var current_game = null
+
+        function set_players(names) {
+            for (i = 0; i < names.length; i++) {
+                $.getJSON(pong_server + "/addplayers/" + names[i], function (accepted) { });
+            }
+        };
+
+        function start_game() {
+            $.getJSON(pong_server + "/startgame" + name, function (accepted) { return accepted });
+        };
+
+        function refresh_screen() {
+            $.getJSON(pong_server + "/currentgame", function (game) {
+                current_game = game;
+                update_screen(current_game);
+            });
+        };
+
+        function clear_game() {
+            $("#p1").html("");
+            $("#p2").html("");
+            $("#p3").html("");
+            $("#p0").html("");
+            $("#s1").html("");
+            $("#s2").html("");
+            $("#messages").html("");
+        };
+
+        function update_screen(game) {
+            $.each(game.players, function (i, player) {
+                $("#p" + i).html(player.name);
+                if (i == game.serving_player_index) {
+                    $("#p" + i).append("<img src='pong.png' />");
+                };
+            });
+            $("#s1").html(game.score[0]);
+            $("#s2").html(game.score[1]);
+            if (game.game_over) {
+                $("#messages").html("Team " + game.winning_team + " wins");
+            };
+        };
+
+        $(document).ready(function () {
+            $("#newgame_button").click(function () {
+                $("#newgame_button").attr("disabled", true);
+                clear_game();
+                $.getJSON(pong_server + "/newgame/", function (accepted) {
+                }).done(function () {
+                    $("#newgame_button").attr("disabled", false);
+                });
+            });
+            $("#addplayer_button").click(function () {
+                $("#addplayer_button").attr("disabled", true);
+                $.getJSON(pong_server + "/addplayers/" + $("#player_name").val(), function (accepted) {
+                }).done(function () {
+                    $("#addplayer_button").attr("disabled", false);
+                });
+            });
+            $("#startgame_button").click(function () {
+                $("#startgame_button").attr("disabled", true);
+                $.getJSON(pong_server + "/startgame" + name, function (accepted) {
+                    if (accepted) {
+                        refresh_screen();
+                    };
+                }).done(function () {
+                    $("#startgame_button").attr("disabled", false);
+                    $("#settings").toggle(false);
+                });
+            });
+            $('#s1').mouseover(function () {
+                $(this).addClass('score_hover');
+            });
+            $('#s1').mouseout(function () {
+                $(this).removeClass('score_hover');
+            });
+            $("#s1").click(function () {
+                $.getJSON(pong_server + "/register_score/1/", function (accepted) {
+                    if (accepted) {
+                        refresh_screen();
+                    };
+                });
+            });
+
+            $('#s2').mouseover(function () {
+                $(this).addClass('score_hover');
+            });
+            $('#s2').mouseout(function () {
+                $(this).removeClass('score_hover');
+            });
+            $("#s2").click(function () {
+                $.getJSON(pong_server + "/register_score/2/", function (accepted) {
+                    if (accepted) {
+                        refresh_screen();
+                    };
+                });
+            });
+            $("#menu").click(function () {
+                $("#settings").toggle();
+            });
+            refresh_screen();
+        });
+    </script>
+</body>
+</html>
