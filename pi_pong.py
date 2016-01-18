@@ -16,6 +16,7 @@ whitegpio = 18
 bluegpio = 4
 
 # Color Assignments
+# The colors listed are HealthX branding colors
 whiteColor = "#F2F2F2"
 blueColor = "#0067A0"
 
@@ -31,6 +32,7 @@ labelFont = tkFont.Font(family= 'Arial', size=300, weight='bold')
 exitFont = tkFont.Font(family= 'Arial', size=20)
 
 # Set window parameters
+# Set the window's title
 window.title("Pi-Pong")
 # Sets the window to be fullscreen
 w, h = window.winfo_screenwidth(), window.winfo_screenheight()
