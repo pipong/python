@@ -77,7 +77,7 @@ class PongGame():
                                               self.players[3].name)
         else:
             msg = 'Team 1: {0} vs Team 2: {1}'.format(self.players[0].name,
-                                              self.players[2].name)
+                                              self.players[1].name)
         self.history[datetime.datetime.now()] = 'game started'
         self.history[datetime.datetime.now()] = msg
 
