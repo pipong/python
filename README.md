@@ -24,6 +24,7 @@ Run the following command at the terminal on the Raspberry Pi. (This has not bee
 - Reverse the blue and white colors
 - Turn off the screensaver to the Pi (or set to something very long)
     http://www.etcwiki.org/wiki/Disable_screensaver_and_screen_blanking_Raspberry_Pi
+    Optional: Have pi come out of screen saver or blanking when button is pressed
 - Add functions for the master reset button
 - Determine wiring schematic for master reset button
 - Font size should change depending on screen size
