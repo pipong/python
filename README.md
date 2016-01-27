@@ -13,10 +13,19 @@ Install GPIO Library for using the GPIO pins.
 
 *sudo pip install --upgrade RPi.GPIO*  
 
-Connect the **3.3V** supply source on the Raspberry Pi to a 330 Ohm resistor.  Split this end to two individual momentary switches.  One switch to be connected to the GPIO pin position **4** and the other **18**.
-
 ## Github Install
 
 Run the following command at the terminal on the Raspberry Pi. (This has not been fully tested yet and command may be out of date)
 
 *sudo apt-get install git*
+
+## To Do Items
+
+- Reverse the blue and white colors
+- Turn off the screensaver to the Pi (or set to something very long)
+    http://www.etcwiki.org/wiki/Disable_screensaver_and_screen_blanking_Raspberry_Pi
+- Add functions for the master reset button
+- Determine wiring schematic for master reset button
+- Font size should change depending on screen size
+- Have program begin on start up
+- Winner screen to display once game ends
