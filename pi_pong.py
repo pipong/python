@@ -71,6 +71,7 @@ winnerLabel.place(relx=0.5, rely=0.5, anchor=CENTER)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(bluegpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(whitegpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(redgpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Winner display function
 def winnerDisplay(team):
