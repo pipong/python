@@ -136,6 +136,7 @@ def white_score(channel):
     whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
     blueLabel.place(relx=0.25, rely=0.50, anchor=CENTER)
 
+# Resets the game back to zero
 def reset_score(channel):
     global whiteScore
     global blueScore
