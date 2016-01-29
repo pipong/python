@@ -5,6 +5,7 @@ import web
 import json
 import pipong_lib
 import traceback
+import datetime
 
 VERSION = 1
 
@@ -25,12 +26,25 @@ urls = ('/', 'index',
 
 def start_up():
     global WebServer
-    global CURRENT_GAME
+    global GameManager
     WebServer = web.application(urls, globals())
     WebServer.run()
 
 def finish_up():
     WebServer.stop()
+
+class GameResponse():
+    def __init__(self, contents, return_code):
+        self.timestamp = datetime.datetime.now()
+        self.contents = contents
+        self.return_code = return_code
+
+    def prepare(self):
+        results = self.__dict__.copy()
+        for item in results:
+            if type(results[item]) is datetime.datetime:
+                results[item] = results[item].isoformat()
+        return results
 
 
 class index:
@@ -40,13 +54,11 @@ class index:
 class newgame:
     def GET(self, url_string):
         try:
-            global WebServer
-            global GameManager
             web.header('Access-Control-Allow-Origin', '*')
             web.header('Cache-control', 'no-cache')
             GameManager.current_game = pipong_lib.PongGame()
             GameManager.current_game.number = GameManager.next_game_number()
-            return json.dumps(True)
+            return json.dumps(GameResponse(GameManager.current_game.prepare(), 0).prepare())
 
         except Exception as err:
             # HTTP 500
@@ -64,9 +76,9 @@ class addplayers():
                 if player_name not in GameManager.player_directory:
                     GameManager.new_player(player_name)
                 GameManager.current_game.players.append(GameManager.player_directory[player_name])
-                return json.dumps(True)
+                return json.dumps(GameResponse(GameManager.current_game.prepare(), 0).prepare())
             else:
-                return json.dumps(False)
+                return json.dumps(GameResponse(GameManager.current_game.prepare(), 1).prepare())
 
         except Exception as err:
             # HTTP 500
@@ -81,7 +93,7 @@ class newplayer():
             if url_string.endswith('/'):
                 url_string = url_string[:-1]
             new_player = GameManager.new_player(url_string)
-            return json.dumps(new_player.for_json())
+            return json.dumps(GameResponse(new_player.prepare(), 0).prepare())
 
         except Exception as err:
             # HTTP 500
@@ -93,7 +105,7 @@ class playerdirectory():
         try:
             web.header('Access-Control-Allow-Origin', '*')
             web.header('Cache-control', 'no-cache')
-            return json.dumps(GameManager.player_directory_for_json())
+            return json.dumps(GameResponse(GameManager.player_directory_prepare(), 0).prepare())
 
         except Exception as err:
             # HTTP 500
@@ -105,7 +117,10 @@ class startgame():
         try:
             web.header('Access-Control-Allow-Origin', '*')
             web.header('Cache-control', 'no-cache')
-            return json.dumps(GameManager.current_game.start())
+            if GameManager.current_game.start():
+                return json.dumps(GameResponse(GameManager.current_game.prepare(), 0).prepare())
+            else:
+                return json.dumps(GameResponse('Failed', 1).prepare())
 
         except Exception as err:
             # HTTP 500
@@ -116,7 +131,7 @@ class currentgame():
     def GET(self, url_string):
         web.header('Access-Control-Allow-Origin', '*')
         web.header('Cache-control', 'no-cache')
-        return json.dumps(GameManager.current_game.for_json())
+        return json.dumps(GameResponse(GameManager.current_game.prepare(), 0).prepare())
 
 class retrievegame():
     def GET(self, game_number):
@@ -147,8 +162,8 @@ class register_score():
                 if GameManager.current_game.game_over:
                     GameManager.save_players()
                     GameManager.save_game()
-                return json.dumps(True)
-            return json.dumps(False)
+                return json.dumps(GameResponse(GameManager.current_game.prepare(), 0).prepare())
+            return json.dumps(GameResponse(GameManager.current_game.prepare(), 1).prepare())
 
         except Exception as err:
             # HTTP 500

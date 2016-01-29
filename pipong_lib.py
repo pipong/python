@@ -6,7 +6,8 @@ import os
 import ConfigParser
 import cPickle
 import json
-
+import requests
+import dateutil.parser
 
 class Player():
     def __init__(self, name):
@@ -18,12 +19,24 @@ class Player():
         self.id = None
         self.date_added = None
 
-    def for_json(self):
+    def prepare(self):
         results = self.__dict__.copy()
         for item in results:
             if type(results[item]) is datetime.datetime:
                 results[item] = results[item].isoformat()
         return results
+
+    @staticmethod
+    def from_dict(player_dict):
+        player = Player(player_dict['name'])
+        player.games_finished = int(player_dict['games_finished'])
+        player.games_started = int(player_dict['games_started'])
+        player.id = int(player_dict['id'])
+        player.loss = int(player_dict['loss'])
+        player.win = int(player_dict['win'])
+        player.date_added = dateutil.parser.parse(player_dict['date_added'])
+        return player
+
 
 
 class PongGame():
@@ -69,7 +82,6 @@ class PongGame():
 
     def start(self):
         if len(self.players) not in [2,4]:
-            print 'invalid number of players'
             self.game_over = True
             return False
         if len(self.players) == 4:
@@ -128,12 +140,12 @@ class PongGame():
                 
                 self.history[datetime.datetime.now()] = 'team {0} wins'.format(self.winning_team)
 
-    def for_json(self):
+    def prepare(self):
         results = {}
         results['game_number'] = self.number
         results['players'] =  []
         for idx in range(0, len(self.players)):
-            results['players'].append(self.players[idx].for_json())
+            results['players'].append(self.players[idx].prepare())
         results['score'] = self.score
         results['serving_player_index'] = self.serving_player_index
         results['game_started'] = self.game_started
@@ -147,21 +159,84 @@ class PongGame():
 
         return results
 
+    @staticmethod
+    def from_dict(game_dict):
+        game = PongGame()
+        game.number = game_dict['game_number']
+        for idx in range(0, len(game_dict['players'])):
+            game.players.append(Player.from_dict(game_dict['players'][idx]))
+        game.score = game_dict['score']
+        game.serving_player_index = game_dict['serving_player_index']
+        game.game_started = game_dict['game_started']
+        game.serve_number = game_dict['serve_number']
+        for h in game_dict['history']:
+            dts = dateutil.parser.parse(h)
+            game.history[dts] = game_dict['history'][h]
+        game.game_over = game_dict['game_over']
+        game.winning_team = game_dict['winning_team']
+        game.doubles = game_dict['doubles']
+        return game
+
 
 class PongClient():
     def __init__(self):
-        pass
+        self.game = None
+        self.player_directory = {}
+        self.server_url = None
 
-    def quit(self):
-        pass
+    def new_game(self):
+        raw_response = requests.get(self.server_url + '/newgame/')
+        dict_response = json.loads(raw_response.content)
+        if int(dict_response['return_code']) == 0:
+            self.game = PongGame.from_dict(dict_response['contents'])
+        else:
+            print 'boom'
+
+    def new_player(self, name):
+        response = requests.get(self.server_url + '/newplayer/' + name)
+
+    def set_player(self, player):
+        raw_response = requests.get(self.server_url + '/addplayers/' + player.name)
+        dict_response = json.loads(raw_response.content)
+        if int(dict_response['return_code']) == 0:
+            self.game = PongGame.from_dict(dict_response['contents'])
+
+    def start_game(self):
+        raw_response = requests.get(self.server_url + '/startgame/')
+        dict_response = json.loads(raw_response.content)
+        if dict_response['return_code'] == 0:
+            self.game = PongGame.from_dict(dict_response['contents'])
+        else:
+            print 'pow'
+
+    def refresh_player_directory(self):
+        raw_response = requests.get(self.server_url + '/playerdirectory/')
+        dict_response = json.loads(raw_response.content)
+        player_dictionary = dict_response['contents']
+        for name in player_dictionary:
+            self.player_directory[name] = Player.from_dict(player_dictionary[name])
+        
+    def register_score(self, team_number):
+        raw_response = requests.get(self.server_url + '/register_score/' + str(team_number))
+        dict_response = json.loads(raw_response.content)
+        if int(dict_response['return_code']) == 0:
+            self.game = PongGame.from_dict(dict_response['contents'])
+
+    def refresh_game(self):
+        raw_response = requests.get(self.server_url + '/currentgame/')
+        dict_response = json.loads(raw_response.content)
+        if int(dict_response['return_code']) == 0:
+            self.game = PongGame.from_dict(dict_response['contents'])
+
+    
 
 
 class PongManager():
     def __init__(self):
         config = ConfigParser.SafeConfigParser()
         self.server_path = os.path.dirname(__file__)
-        self.config_filename = '{0}\\server.ini'.format(self.server_path)
-        self.player_filename = '{0}\\players.p'.format(self.server_path)
+        self.config_filename = '{0}/server.ini'.format(self.server_path)
+        self.player_filename = '{0}/players.p'.format(self.server_path)
         config.read(self.config_filename)
         self.last_game_number = config.getint('server', 'game_number')
         self.last_player_number = 0
@@ -197,15 +272,15 @@ class PongManager():
         cPickle.dump(self.player_directory, open(self.player_filename, 'wb'))
         return
 
-    def player_directory_for_json(self):
+    def player_directory_prepare(self):
         results = {}
         for name in self.player_directory:
-            results[name] = self.player_directory[name].for_json()
+            results[name] = self.player_directory[name].prepare()
         return results
 
     def save_game(self):
         # save game file
-        game_filename = '{0}\\{1}.p'.format(self.server_path, self.current_game.number)
+        game_filename = '{0}/{1}.p'.format(self.server_path, self.current_game.number)
         with open(game_filename, 'wb') as gamefile:
             cPickle.dump(self.current_game, gamefile)
         # update game number
@@ -217,7 +292,7 @@ class PongManager():
             config.write(configfile)
 
     def get_game(self, game_number):
-        game_filename = '{0}\\{1}.p'.format(self.server_path, game_number)
+        game_filename = '{0}/{1}.p'.format(self.server_path, game_number)
         with open(game_filename, 'wb') as gamefile:
             game = cPickle.load(gamefile)
         return game
