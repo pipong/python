@@ -10,7 +10,7 @@ import tkFont
 import time
 
 # Time before score button can be pressed again (in milleseconds)
-delayTime = 750
+delayTime = 250
 
 # White and blue team GPIO pin assignments (Raspberry Pi B+)
 whitegpio = 17
@@ -140,6 +140,9 @@ def white_score(channel):
 def reset_score(channel):
     global whiteScore
     global blueScore
+    # Set Score back to zero
+    whiteScore = 0
+    blueScore = 0
     # Sets the label text equal to the score
     whiteLabel["text"] = whiteScore
     blueLabel["text"] = blueScore
