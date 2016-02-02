@@ -13,8 +13,8 @@ import time
 delayTime = 250
 
 # White and blue team GPIO pin assignments (Raspberry Pi B+)
-whitegpio = 17
-bluegpio = 27
+whitegpio = 27
+bluegpio = 17
 redgpio = 22
 
 # Color Assignments
@@ -73,25 +73,6 @@ GPIO.setup(bluegpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(whitegpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(redgpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-# Winner display function
-def winnerDisplay(team):
-    global whiteColor
-    global blueColor
-    # Set the score labels to blank values
-    whiteLabel["text"] = ""
-    blueLabel["text"] = ""
-    # Set the winner score label
-    if team == "Blue":
-        winnerLabel.configure(fg=blueColor)
-    elif team == "White":
-        winnerLabel.configure(fg=whiteColor)
-    winnerLabel["text"] = team + " Wins!"
-    whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
-    # Show the label for set amount of time
-    timer.sleep(3)
-    # Set the label back to blank value
-    winnerLabel["text"] = ""
-
 # Blue team score +1 button was hit
 def blue_score(channel):
     global blueScore
@@ -102,8 +83,17 @@ def blue_score(channel):
     if blueScore >= 11:
         # Checks to see if score won by atleast 2 points
         if (blueScore - whiteScore) >= 2:
-            # Calls winner function
-            winnerDisplay("Blue")
+            # Set the score labels to blank values
+            whiteLabel["text"] = ""
+            blueLabel["text"] = ""
+            # Set the winner score label
+            winnerLabel.configure(fg=blueColor)
+            winnerLabel["text"] = team + " Wins!"
+            whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
+            # Show the label for set amount of time
+            timer.sleep(3)
+            # Set the label back to blank value
+            winnerLabel["text"] = ""
             # Resets the score to zero for a new round since a winner was found
             blueScore = 0
             whiteScore = 0
@@ -124,9 +114,18 @@ def white_score(channel):
     if whiteScore >= 11:
         # Checks to see if score won by atleast 2 points
         if (whiteScore - blueScore) >= 2:
-            # Calls winner function
-            winnerExists("White")
-            # Resets the score to zero for new round since a winner was found
+           # Set the score labels to blank values
+            whiteLabel["text"] = ""
+            blueLabel["text"] = ""
+            # Set the winner score label
+            winnerLabel.configure(fg=blueColor)
+            winnerLabel["text"] = team + " Wins!"
+            whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
+            # Show the label for set amount of time
+            timer.sleep(3)
+            # Set the label back to blank value
+            winnerLabel["text"] = ""
+            # Resets the score to zero for a new round since a winner was found
             blueScore = 0
             whiteScore = 0
     # Sets the label text equal to the score
