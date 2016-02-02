@@ -63,7 +63,7 @@ whiteLabel.pack()
 whiteLabel.place(relx=0.75, rely=0.50, anchor=CENTER)
 
 # Winner Label
-winnerLabel = Label(window, text="", front=labelFont, fg='red', bg='black')
+winnerLabel = Label(window, text="", font=labelFont, fg='red', bg='black')
 winnerLabel.pack()
 winnerLabel.place(relx=0.5, rely=0.5, anchor=CENTER)
 
